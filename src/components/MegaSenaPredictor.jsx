@@ -340,7 +340,7 @@ export default function MegaSenaPredictor() {
     const historical = calculateFrequencies(lotteryData);
     const viradaResults = filterViradaResults(lotteryData);
     const virada = calculateFrequencies(viradaResults);
-    const recentHot = calculateRecentHot(lotteryData, 100);
+    const recentHot = calculateRecentHot(lotteryData, lotteryData.length);
     const viradaHot = getTopNumbers(virada, 13);
     const stats = getStatistics(lotteryData);
 

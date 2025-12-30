@@ -19,7 +19,7 @@ Um gerador de números para Mega-Sena e Mega da Virada baseado em análise estat
 
 #### 1. Mega-Sena Regular 🍀
 - Analisa todos os sorteios históricos da Mega-Sena
-- Considera tendências dos últimos 100 jogos
+- Considera tendências baseadas em todo o histórico
 - Identifica números "quentes" e "frios"
 
 #### 2. Mega da Virada 🎆
@@ -47,10 +47,10 @@ Um gerador de números para Mega-Sena e Mega da Virada baseado em análise estat
 ### Algoritmo de Previsão
 ```
 1. Busca dados atualizados da API
-2. Calcula frequências em tempo real
+2. Calcula frequências em tempo real de todo o histórico
 3. Cria pool ponderado baseado em:
-   ├── Frequência histórica
-   ├── Tendências recentes
+   ├── Frequência histórica completa
+   ├── Tendências de todos os sorteios
    ├── Número da sorte (se fornecido)
    └── Fatores temporais (data/hora)
 4. Gera seed única do momento

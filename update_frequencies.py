@@ -154,10 +154,12 @@ def calculate_virada_frequencies(df):
     return frequency, len(virada_df)
 
 
-def calculate_recent_hot(df, last_n=100):
+def calculate_recent_hot(df, last_n=None):
     """Calcula os números mais frequentes nos últimos N sorteios"""
+    if last_n is None:
+        last_n = len(df)
     print(f"🔥 Calculando números quentes (últimos {last_n} sorteios)...")
-    
+
     recent_df = df.tail(last_n)
     
     ball_columns = [col for col in df.columns if 'Bola' in str(col)]
