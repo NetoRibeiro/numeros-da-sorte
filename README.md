@@ -1,143 +1,83 @@
 # 🍀 Mega-Sena Predictor
 
-Um gerador de números para Mega-Sena e Mega da Virada baseado em análise estatística de dados históricos.
+Um gerador de números para Mega-Sena e Mega da Virada baseado em análise estatística de dados históricos em tempo real.
 
 ![React](https://img.shields.io/badge/React-18+-61DAFB?style=flat-square&logo=react)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3+-38B2AC?style=flat-square&logo=tailwind-css)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-## 📸 Preview
-
-<div align="center">
-
-| Mega-Sena | Mega da Virada |
-|:---------:|:--------------:|
-| 🟢 Tema Verde | 🟣 Tema Roxo |
-| 2.954 sorteios | 22 sorteios |
-| 1996-2025 | 1998-2024 |
-
-</div>
-
 ## ✨ Funcionalidades
 
-### 🎰 Dois Modos de Previsão
+### 🌐 Dados em Tempo Real
+- Busca automaticamente resultados atualizados da Mega-Sena via API
+- Cache de 1 hora para otimizar performance
+- Botão de atualização manual
+- Fallback para dados estáticos se APIs falharem
+- Indicador de última atualização
 
-#### Mega-Sena Regular
-- Baseado em **2.954 sorteios históricos** (1996-2025)
-- Análise de frequência de todos os números
+### 🎰 Três Modos de Uso
+
+#### 1. Mega-Sena Regular 🍀
+- Analisa todos os sorteios históricos da Mega-Sena
 - Considera tendências dos últimos 100 jogos
-- Números mais frequentes: 10 (345x), 53 (336x), 5 (322x)
+- Identifica números "quentes" e "frios"
 
-#### Mega da Virada 🎆
-- Baseado em **22 sorteios de fim de ano** (1998-2024)
-- Estatísticas exclusivas da Virada
-- O número **10** saiu em 6 das 22 Viradas!
-- Números campeões: 10 (6x), 41 (5x), 34 (5x)
+#### 2. Mega da Virada 🎆
+- Baseado exclusivamente nos sorteios de fim de ano
+- Estatísticas específicas da Mega da Virada
+- Mostra números campeões históricos
 
-### 🍀 Número da Sorte
+#### 3. Modo Embaralhar 🔀
+- Cole seus números favoritos
+- Gera novas combinações embaralhando seus números
+- Crie múltiplos jogos sem repetição
 
-Adicione seu número da sorte para personalizar a previsão:
+### 🍀 Número da Sorte Personalizado
+- Influencia toda a previsão com multiplicadores especiais
+- Destacado com bola dourada se aparecer no resultado
+- Afeta números vizinhos e relacionados
 
-| Influência | Multiplicador |
-|------------|---------------|
-| Seu número da sorte | **2.5x** |
-| Números vizinhos (±5) | **1.15x** |
-| Número complementar (61 - sorte) | **1.3x** |
-| Mesmo último dígito | **1.1x** |
+### 🔢 Apostas Múltiplas
+- **6 números**: Aposta simples
+- **7 números**: 7x mais chances
+- **8 números**: 28x mais chances
 
-- Se o número da sorte aparecer na previsão, será destacado com uma **bola dourada** 🏆
-- Exibe "✨ Incluído!" quando seu número faz parte do resultado
+## 🧮 Como Funciona
 
-### 🔢 Seleção de Quantidade
-
-Escolha entre 6, 7 ou 8 números:
-
-| Quantidade | Tipo | Chances |
-|------------|------|---------|
-| 6 números | Aposta simples | 1x |
-| 7 números | Aposta múltipla | 7x mais chances |
-| 8 números | Aposta múltipla | 28x mais chances |
-
-### ⏱️ Geração Baseada em Tempo
-
-Cada previsão é única baseada no momento exato:
-- Data e hora completa (dia, mês, hora, minuto, segundo)
-- Milissegundos do timestamp
-- Fatores temporais influenciam os pesos:
-  - **Manhã**: favorece números 1-30
-  - **Tarde/Noite**: favorece números 31-60
-  - **Dia da semana**: números múltiplos do dia ganham peso
-  - **Dia do mês**: números correspondentes são priorizados
-
-### 🎨 Interface
-
-- Design responsivo (mobile e desktop)
-- Animação de revelação sequencial das bolas
-- Temas diferenciados para cada modo
-- Exibição de data/hora da geração
-- Cards informativos com números quentes/frios
-
-## 🧮 Como Funciona o Algoritmo
-
+### Algoritmo de Previsão
 ```
-1. Carrega frequências históricas (2.954 ou 22 sorteios)
-2. Cria pool ponderado baseado em:
-   ├── Frequência histórica de cada número
-   ├── Tendências recentes (últimos 100 jogos)
-   ├── Influência do número da sorte
-   └── Fatores baseados em data/hora
-3. Gera seed única: timestamp + data + número da sorte
-4. Seleciona números únicos do pool ponderado
-5. Ordena e exibe os resultados
+1. Busca dados atualizados da API
+2. Calcula frequências em tempo real
+3. Cria pool ponderado baseado em:
+   ├── Frequência histórica
+   ├── Tendências recentes
+   ├── Número da sorte (se fornecido)
+   └── Fatores temporais (data/hora)
+4. Gera seed única do momento
+5. Seleciona números do pool ponderado
+6. Retorna resultado ordenado
 ```
 
-## 📊 Dados Estatísticos
+### Fontes de Dados
+- **API Primária**: loteriascaixa.com/api/mega-sena
+- **API Fallback**: Caixa Econômica Federal (oficial)
+- **Cache Local**: localStorage (1 hora)
+- **Fallback Estático**: Dados built-in caso APIs falhem
 
-### Top 10 Números - Mega-Sena Geral
-| Posição | Número | Frequência |
-|---------|--------|------------|
-| 1º | 10 | 345 vezes |
-| 2º | 53 | 336 vezes |
-| 3º | 5 | 322 vezes |
-| 4º | 37 | 321 vezes |
-| 5º | 34 | 320 vezes |
-| 6º | 33 | 316 vezes |
-| 7º | 38 | 316 vezes |
-| 8º | 4 | 314 vezes |
-| 9º | 17 | 312 vezes |
-| 10º | 32 | 312 vezes |
-
-### Top 10 Números - Mega da Virada
-| Posição | Número | Frequência |
-|---------|--------|------------|
-| 1º | 10 | 6 vezes |
-| 2º | 41 | 5 vezes |
-| 3º | 34 | 5 vezes |
-| 4º | 32 | 4 vezes |
-| 5º | 3 | 4 vezes |
-| 6º | 5 | 4 vezes |
-| 7º | 17 | 4 vezes |
-| 8º | 35 | 4 vezes |
-| 9º | 33 | 4 vezes |
-| 10º | 36 | 4 vezes |
-
-### Números que Nunca Saíram na Virada
-8, 13, 28, 54
-
-## 🚀 Instalação
+## 🚀 Como Rodar Localmente
 
 ### Pré-requisitos
 - Node.js 16+
 - npm ou yarn
 
-### Passos
+### Instalação
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/mega-sena-predictor.git
+git clone https://github.com/seu-usuario/numeros-da-sorte.git
 
 # Entre no diretório
-cd mega-sena-predictor
+cd numeros-da-sorte
 
 # Instale as dependências
 npm install
@@ -146,91 +86,192 @@ npm install
 npm run dev
 ```
 
-### Usando com Vite + React
+O app estará disponível em `http://localhost:5173/numeros-da-sorte/`
+
+### Visualizar Build de Produção Localmente
 
 ```bash
-# Criar novo projeto
-npm create vite@latest mega-sena-predictor -- --template react
+# Criar build de produção
+npm run build
 
-# Copiar o componente para src/
-# Instalar Tailwind CSS
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-
-# Configurar tailwind.config.js e importar no CSS
+# Servir build localmente
+npm run preview
 ```
 
-## 📁 Estrutura do Projeto
+## 📦 Deploy
 
+### Deploy no GitHub Pages
+
+#### 1. Configurar o Repositório
+
+Primeiro, certifique-se de que o arquivo `vite.config.js` está configurado corretamente:
+
+```javascript
+export default defineConfig({
+  plugins: [react()],
+  base: '/numeros-da-sorte/' // Nome do seu repositório
+})
 ```
-mega-sena-predictor/
-├── src/
-│   ├── components/
-│   │   └── MegaSenaPredictor.jsx   # Componente principal
-│   ├── App.jsx
-│   └── index.css                    # Tailwind imports
-├── public/
-├── package.json
-├── tailwind.config.js
-└── README.md
+
+#### 2. Deploy Automático
+
+```bash
+# Build e deploy em um comando
+npm run deploy
+```
+
+Isso irá:
+1. Criar o build de produção (`npm run build`)
+2. Fazer deploy para o branch `gh-pages`
+
+#### 3. Configurar GitHub Pages
+
+1. Vá para o repositório no GitHub
+2. **Settings** → **Pages**
+3. **Source**: Selecione `gh-pages` branch
+4. **Folder**: `/ (root)`
+5. Clique em **Save**
+
+Seu site estará disponível em:
+```
+https://seu-usuario.github.io/numeros-da-sorte/
+```
+
+#### 4. Atualizar o Deploy
+
+Para publicar novas alterações:
+
+```bash
+# Commit suas mudanças
+git add .
+git commit -m "Suas alterações"
+git push origin main
+
+# Deploy
+npm run deploy
+```
+
+### Deploy em Outras Plataformas
+
+#### Vercel
+
+```bash
+# Instalar Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+#### Netlify
+
+```bash
+# Build
+npm run build
+
+# Arraste a pasta dist/ para netlify.com
+# Ou use Netlify CLI:
+npm i -g netlify-cli
+netlify deploy --prod --dir=dist
 ```
 
 ## 🛠️ Tecnologias
 
-- **React 18+** - Biblioteca UI
-- **Tailwind CSS 3+** - Estilização
-- **JavaScript ES6+** - Lógica do algoritmo
+- **React 18+** - UI Library
+- **Vite 5+** - Build tool
+- **Tailwind CSS 3+** - Styling
+- **JavaScript ES6+** - Logic
 
-## 📱 Responsividade
+## 📁 Estrutura do Projeto
 
-O aplicativo é totalmente responsivo:
-- **Mobile**: Bolas de 64x64px, layout compacto
-- **Desktop**: Bolas de 80x80px, layout expandido
+```
+numeros-da-sorte/
+├── src/
+│   ├── components/
+│   │   └── MegaSenaPredictor.jsx  # Componente principal
+│   ├── hooks/
+│   │   └── useLotteryData.js      # Hook de API
+│   ├── utils/
+│   │   └── frequencies.js         # Cálculos de frequência
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+├── public/
+│   └── qrcode_pix.jpg
+├── dist/                           # Build de produção (gerado)
+├── package.json
+├── vite.config.js
+└── README.md
+```
 
-## 🎯 Uso
+## 🔄 Atualizando Frequências Manualmente (Opcional)
 
-1. **Selecione o modo**: Mega-Sena ou Mega da Virada
-2. **Adicione seu número da sorte** (opcional): Digite um número de 1 a 60
-3. **Escolha a quantidade**: 6, 7 ou 8 números
-4. **Clique em "GERAR NÚMEROS DA SORTE"**
-5. **Aguarde a revelação** animada dos números
+Se você quiser atualizar os dados de fallback estáticos:
+
+```bash
+# Requer Python 3.6+
+pip install pandas openpyxl requests
+
+# Buscar da API e gerar arquivo JS
+python update_frequencies.py --api
+
+# Ou usar arquivo Excel local
+python update_frequencies.py Mega-Sena.xlsx
+```
+
+O script `update_frequencies.py` gera um arquivo JavaScript com as frequências atualizadas que pode ser copiado para o componente.
+
+## 🎯 Uso da Aplicação
+
+1. **Selecione o modo**: Mega-Sena, Mega da Virada ou Embaralhar
+2. **Configure suas preferências**:
+   - Adicione número da sorte (opcional)
+   - Escolha quantidade de números (6, 7 ou 8)
+   - No modo Embaralhar: cole seus números
+3. **Gere os números**: Clique no botão principal
+4. **Atualize dados**: Use o botão "🔄 Atualizar" quando quiser
+
+## 📊 Indicadores da Interface
+
+- **⏱️ Atualizado: DD/MM HH:MM** - Última atualização dos dados
+- **🔄 Atualizar** - Buscar novos dados da API
+- **⚠️ Aviso amarelo** - Usando dados em cache antigo
+- **✅ Dados atualizados da API** - Dados frescos carregados
+- **📦 Usando dados estáticos** - Fallback ativo
 
 ## ⚠️ Disclaimer
 
 > **Este aplicativo é apenas para entretenimento.**
-> 
-> A Mega-Sena e a Mega da Virada são jogos de azar operados pela Caixa Econômica Federal. Os resultados são completamente aleatórios e este gerador não garante nenhum prêmio.
-> 
-> Jogue com responsabilidade. Se precisar de ajuda, ligue para o CVV: 188.
+>
+> A Mega-Sena é um jogo de azar. Os resultados são completamente aleatórios e este gerador não garante prêmios.
+>
+> Jogue com responsabilidade.
 
-## 📄 Fonte dos Dados
+## 📚 Documentação Adicional
 
-- Dados históricos da Mega-Sena: 2.954 sorteios (11/03/1996 - 20/12/2025)
-- Dados da Mega da Virada: 22 sorteios (31/12/1998 - 31/12/2024)
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+- [API-INTEGRATION.md](API-INTEGRATION.md) - Detalhes técnicos da integração com API
+- [IMPLEMENTATION-SUMMARY.md](IMPLEMENTATION-SUMMARY.md) - Resumo da implementação
+- [DEPLOY.md](DEPLOY.md) - Guia rápido de deployment
 
 ## 🤝 Contribuições
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
+Contribuições são bem-vindas!
 
-1. Fazer um Fork do projeto
-2. Criar uma branch para sua feature (`git checkout -b feature/NovaFeature`)
+1. Fork o projeto
+2. Crie uma branch (`git checkout -b feature/NovaFeature`)
 3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
 4. Push para a branch (`git push origin feature/NovaFeature`)
-5. Abrir um Pull Request
+5. Abra um Pull Request
 
-## 📧 Contato
+## 📝 Licença
 
-Se tiver dúvidas ou sugestões, abra uma [issue](https://github.com/seu-usuario/mega-sena-predictor/issues).
+Este projeto está sob a licença MIT.
 
 ---
 
 <div align="center">
 
-**Feito com 🍀 para os apostadores brasileiros**
+**Feito com 🍀 para apostadores brasileiros**
 
 ⭐ Se este projeto te ajudou, deixe uma estrela!
 

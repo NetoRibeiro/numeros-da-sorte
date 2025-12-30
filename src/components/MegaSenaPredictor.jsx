@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useLotteryData } from '../hooks/useLotteryData';
+import {
+  calculateFrequencies,
+  calculateRecentHot,
+  filterViradaResults,
+  getTopNumbers,
+  getBottomNumbers,
+  getStatistics
+} from '../utils/frequencies';
 
-// Historical frequency data from 2954 Mega-Sena drawings (1996-2025)
-const historicalFrequency = {
+// Fallback static data (used if API fails and no cache available)
+const FALLBACK_HISTORICAL_FREQUENCY = {
   1: 288, 2: 295, 3: 273, 4: 314, 5: 322, 6: 294, 7: 276, 8: 293, 9: 281, 10: 345,
   11: 311, 12: 279, 13: 304, 14: 287, 15: 264, 16: 305, 17: 312, 18: 281, 19: 287, 20: 288,
   21: 246, 22: 263, 23: 309, 24: 296, 25: 294, 26: 243, 27: 312, 28: 303, 29: 294, 30: 312,
@@ -10,8 +19,7 @@ const historicalFrequency = {
   51: 301, 52: 298, 53: 336, 54: 310, 55: 255, 56: 310, 57: 283, 58: 282, 59: 285, 60: 283
 };
 
-// Mega da Virada frequency (22 drawings from 1998-2024)
-const viradaFrequency = {
+const FALLBACK_VIRADA_FREQUENCY = {
   1: 3, 2: 2, 3: 4, 4: 2, 5: 4, 6: 1, 7: 1, 8: 0, 9: 1, 10: 6,
   11: 3, 12: 3, 13: 0, 14: 2, 15: 2, 16: 1, 17: 4, 18: 2, 19: 3, 20: 3,
   21: 1, 22: 2, 23: 1, 24: 2, 25: 1, 26: 1, 27: 1, 28: 0, 29: 2, 30: 1,
@@ -20,11 +28,9 @@ const viradaFrequency = {
   51: 4, 52: 1, 53: 2, 54: 0, 55: 2, 56: 4, 57: 2, 58: 4, 59: 3, 60: 1
 };
 
-// Recent trends (last 100 drawings) - hot numbers
-const recentHotNumbers = [15, 4, 9, 27, 38, 54, 8, 5, 40, 37];
-
-// Virada hot numbers (most frequent in Mega da Virada)
-const viradaHotNumbers = [10, 41, 34, 32, 3, 5, 17, 35, 33, 36, 51, 58, 56];
+const FALLBACK_RECENT_HOT = [15, 4, 9, 27, 38, 54, 8, 5, 40, 37];
+const FALLBACK_VIRADA_HOT = [10, 41, 34, 32, 3, 5, 17, 35, 33, 36, 51, 58, 56];
+const FALLBACK_TOTAL_DRAWINGS = 2954;
 
 // PIX donation info
 const PIX_KEY = '7009a9a8-33e3-4edc-91b1-eee413b117a9';
@@ -36,28 +42,28 @@ function seededRandom(seed) {
 }
 
 // Generate prediction based on multiple factors
-function generatePrediction(count, timestamp, isVirada, luckyNumber) {
+function generatePrediction(count, timestamp, isVirada, luckyNumber, frequencies) {
   const date = new Date(timestamp);
-  
-  let seed = timestamp + 
-    date.getDate() * 1000000 + 
-    date.getMonth() * 10000000 + 
+
+  let seed = timestamp +
+    date.getDate() * 1000000 +
+    date.getMonth() * 10000000 +
     date.getHours() * 100000000 +
     date.getMinutes() * 1000000000 +
     date.getSeconds() * 10000000000;
-  
+
   if (luckyNumber && luckyNumber >= 1 && luckyNumber <= 60) {
-    seed += luckyNumber * 77777777;
+    seed += luckyNumber * 88888888;
   }
-  
+
   let currentSeed = seed;
   const getNextRandom = () => {
     currentSeed++;
     return seededRandom(currentSeed);
   };
 
-  const frequency = isVirada ? viradaFrequency : historicalFrequency;
-  const hotNumbers = isVirada ? viradaHotNumbers : recentHotNumbers;
+  const frequency = isVirada ? frequencies.virada : frequencies.historical;
+  const hotNumbers = isVirada ? frequencies.viradaHot : frequencies.recentHot;
   const baseWeight = isVirada ? 2 : 280;
 
   const weightedPool = [];
@@ -66,21 +72,21 @@ function generatePrediction(count, timestamp, isVirada, luckyNumber) {
     let weight = (frequency[num] || 0) + baseWeight;
     
     if (hotNumbers.includes(num)) {
-      weight *= 1.2;
+      weight *= 1.7;
     }
     
     if (luckyNumber && luckyNumber >= 1 && luckyNumber <= 60) {
       if (num === luckyNumber) {
-        weight *= 2.5;
+        weight *= 2.6;
       }
       if (Math.abs(num - luckyNumber) <= 5 && num !== luckyNumber) {
-        weight *= 1.15;
+        weight *= 1.16;
       }
       if (num === (61 - luckyNumber)) {
-        weight *= 1.3;
+        weight *= 1.34;
       }
       if (num % 10 === luckyNumber % 10 && num !== luckyNumber) {
-        weight *= 1.1;
+        weight *= 1.07;
       }
     }
     
@@ -89,17 +95,17 @@ function generatePrediction(count, timestamp, isVirada, luckyNumber) {
     const dayOfMonth = date.getDate();
     
     if (hour < 12) {
-      if (num <= 30) weight *= 1.05;
+      if (num <= 30) weight *= 1.07;
     } else {
-      if (num > 30) weight *= 1.05;
+      if (num > 30) weight *= 1.07;
     }
     
     if ((num % 7) === dayOfWeek) {
-      weight *= 1.1;
+      weight *= 1.16;
     }
     
     if (num === dayOfMonth || num === (dayOfMonth + 30) % 60 + 1) {
-      weight *= 1.2;
+      weight *= 1.25;
     }
     
     const entries = Math.max(1, Math.round(weight));
@@ -297,6 +303,9 @@ function DonationModal({ isOpen, onClose }) {
 }
 
 export default function MegaSenaPredictor() {
+  // Fetch lottery data from API
+  const { data: lotteryData, loading: dataLoading, error: dataError, lastUpdate, refresh } = useLotteryData();
+
   const [mode, setMode] = useState('megasena'); // 'megasena', 'virada', 'shuffle'
   const [numberCount, setNumberCount] = useState(6);
   const [prediction, setPrediction] = useState([]);
@@ -307,7 +316,7 @@ export default function MegaSenaPredictor() {
   const [luckyNumber, setLuckyNumber] = useState('');
   const [usedLuckyNumber, setUsedLuckyNumber] = useState(null);
   const [showDonation, setShowDonation] = useState(false);
-  
+
   // Shuffle mode states
   const [userNumbersInput, setUserNumbersInput] = useState('');
   const [numberOfSets, setNumberOfSets] = useState(3);
@@ -315,6 +324,34 @@ export default function MegaSenaPredictor() {
 
   const isVirada = mode === 'virada';
   const isShuffle = mode === 'shuffle';
+
+  // Calculate frequencies from API data or use fallback
+  const frequencies = useMemo(() => {
+    if (!lotteryData || !Array.isArray(lotteryData)) {
+      return {
+        historical: FALLBACK_HISTORICAL_FREQUENCY,
+        virada: FALLBACK_VIRADA_FREQUENCY,
+        recentHot: FALLBACK_RECENT_HOT,
+        viradaHot: FALLBACK_VIRADA_HOT,
+        stats: { totalDrawings: FALLBACK_TOTAL_DRAWINGS, viradaDrawings: 22 }
+      };
+    }
+
+    const historical = calculateFrequencies(lotteryData);
+    const viradaResults = filterViradaResults(lotteryData);
+    const virada = calculateFrequencies(viradaResults);
+    const recentHot = calculateRecentHot(lotteryData, 100);
+    const viradaHot = getTopNumbers(virada, 13);
+    const stats = getStatistics(lotteryData);
+
+    return {
+      historical,
+      virada,
+      recentHot,
+      viradaHot,
+      stats
+    };
+  }, [lotteryData]);
 
   const handleLuckyNumberChange = (e) => {
     const value = e.target.value;
@@ -370,16 +407,16 @@ export default function MegaSenaPredictor() {
       setIsGenerating(true);
       setIsRevealed(false);
       setPrediction([]);
-      
+
       setTimeout(() => {
         const timestamp = Date.now();
         const lucky = luckyNumber ? parseInt(luckyNumber) : null;
-        const numbers = generatePrediction(numberCount, timestamp, isVirada, lucky);
+        const numbers = generatePrediction(numberCount, timestamp, isVirada, lucky, frequencies);
         setPrediction(numbers);
         setGenerationTime(new Date(timestamp));
         setUsedLuckyNumber(lucky);
         setIsGenerating(false);
-        
+
         setTimeout(() => {
           setIsRevealed(true);
         }, 100);
@@ -399,7 +436,10 @@ export default function MegaSenaPredictor() {
     });
   };
 
-  const hotNumbers = isVirada ? viradaHotNumbers.slice(0, 5) : recentHotNumbers.slice(0, 5);
+  const hotNumbers = isVirada ? frequencies.viradaHot.slice(0, 5) : frequencies.recentHot.slice(0, 5);
+  const coldNumbers = getBottomNumbers(isVirada ? frequencies.virada : frequencies.historical, 5);
+  const totalDrawings = frequencies.stats?.totalDrawings || FALLBACK_TOTAL_DRAWINGS;
+  const viradaDrawings = frequencies.stats?.viradaDrawings || 22;
 
   const getBackgroundClass = () => {
     if (isShuffle) return 'bg-gradient-to-br from-amber-900 via-orange-900 to-amber-800';
@@ -413,6 +453,21 @@ export default function MegaSenaPredictor() {
     return 'bg-white/10 border-white/20';
   };
 
+  // Show loading screen while data is being fetched
+  if (dataLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 p-4 md:p-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 mb-4 animate-pulse">
+            <span className="text-3xl">🍀</span>
+          </div>
+          <p className="text-white text-xl font-semibold mb-2">Carregando dados...</p>
+          <p className="text-green-200 text-sm">Obtendo resultados da Mega-Sena</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen p-4 md:p-8 transition-all duration-500 ${getBackgroundClass()}`}>
       <div className="max-w-2xl mx-auto">
@@ -420,10 +475,10 @@ export default function MegaSenaPredictor() {
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-3 mb-3">
             <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${
-              isShuffle 
+              isShuffle
                 ? 'bg-gradient-to-br from-orange-400 to-red-500'
-                : isVirada 
-                  ? 'bg-gradient-to-br from-yellow-400 to-orange-500' 
+                : isVirada
+                  ? 'bg-gradient-to-br from-yellow-400 to-orange-500'
                   : 'bg-gradient-to-br from-yellow-400 to-yellow-600'
             }`}>
               <span className="text-2xl">{isShuffle ? '🔀' : isVirada ? '🎆' : '🍀'}</span>
@@ -433,12 +488,39 @@ export default function MegaSenaPredictor() {
             </h1>
           </div>
           <p className="text-green-200 text-sm md:text-base">
-            {isShuffle 
+            {isShuffle
               ? 'Embaralhe seus números e gere novos jogos'
-              : isVirada 
-                ? 'Baseado em 22 sorteios da Mega da Virada (1998-2024)' 
-                : `Baseado em ${(2954).toLocaleString()} sorteios históricos (1996-2025)`}
+              : isVirada
+                ? `Baseado em ${viradaDrawings} sorteios da Mega da Virada`
+                : `Baseado em ${totalDrawings.toLocaleString()} sorteios históricos`}
           </p>
+
+          {/* Data update status */}
+          {lastUpdate && (
+            <div className="mt-2 flex items-center justify-center gap-2">
+              <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-3 py-1">
+                <span className="text-green-300 text-xs">⏱️</span>
+                <span className="text-green-100 text-xs">
+                  Atualizado: {lastUpdate.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+              <button
+                onClick={refresh}
+                className="inline-flex items-center gap-1 bg-green-500/20 hover:bg-green-500/30 text-green-200 text-xs px-3 py-1 rounded-full transition-colors"
+                title="Atualizar dados"
+              >
+                🔄 Atualizar
+              </button>
+            </div>
+          )}
+
+          {/* Error indicator */}
+          {dataError && (
+            <div className="mt-2 inline-flex items-center gap-2 bg-yellow-500/20 rounded-full px-3 py-1">
+              <span className="text-yellow-300 text-xs">⚠️</span>
+              <span className="text-yellow-100 text-xs">{dataError}</span>
+            </div>
+          )}
           
           {/* Donation Button */}
           <button
@@ -743,13 +825,13 @@ export default function MegaSenaPredictor() {
                 {isVirada ? '🎆 Campeão da Virada' : '❄️ Números "Atrasados"'}
               </h3>
               <p className="text-green-100 text-sm">
-                {isVirada 
-                  ? '10 (6x), 41 (5x), 34 (5x)'
-                  : [26, 21, 55, 22, 3].map(n => n.toString().padStart(2, '0')).join(', ')}
+                {isVirada
+                  ? `${hotNumbers[0]?.toString().padStart(2, '0')} (${(frequencies.virada[hotNumbers[0]] || 0)}x), ${hotNumbers[1]?.toString().padStart(2, '0')} (${(frequencies.virada[hotNumbers[1]] || 0)}x), ${hotNumbers[2]?.toString().padStart(2, '0')} (${(frequencies.virada[hotNumbers[2]] || 0)}x)`
+                  : coldNumbers.map(n => n.toString().padStart(2, '0')).join(', ')}
               </p>
               <p className="text-green-300 text-xs mt-1">
-                {isVirada 
-                  ? 'Número 10 saiu em 6 das 22 Viradas!'
+                {isVirada
+                  ? `Número ${hotNumbers[0]} saiu em ${frequencies.virada[hotNumbers[0]] || 0} das ${viradaDrawings} Viradas!`
                   : 'Menos frequentes historicamente'}
               </p>
             </div>
@@ -779,18 +861,19 @@ export default function MegaSenaPredictor() {
             <ul className="text-green-300 text-xs space-y-1">
               {isVirada ? (
                 <>
-                  <li>• Analisa os 22 sorteios da Mega da Virada (1998-2024)</li>
-                  <li>• Prioriza números que mais saíram na virada (10, 41, 34...)</li>
+                  <li>• Analisa os {viradaDrawings} sorteios da Mega da Virada</li>
+                  <li>• Prioriza números que mais saíram na virada ({hotNumbers.slice(0, 3).join(', ')}...)</li>
                 </>
               ) : (
                 <>
-                  <li>• Analisa frequência de {(2954).toLocaleString()} sorteios desde 1996</li>
+                  <li>• Analisa frequência de {totalDrawings.toLocaleString()} sorteios históricos</li>
                   <li>• Considera tendências dos últimos 100 jogos</li>
                 </>
               )}
               <li>• Usa a data e hora exata como semente única</li>
               <li>• Seu número da sorte influencia toda a previsão</li>
               <li>• Números próximos ao seu número da sorte ganham peso extra</li>
+              <li>• {lotteryData ? '✅ Dados atualizados da API' : '📦 Usando dados estáticos'}</li>
             </ul>
           </div>
         )}

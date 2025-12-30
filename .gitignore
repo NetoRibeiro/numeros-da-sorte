@@ -35,3 +35,6 @@ lerna-debug.log*
 
 # Local
 *.local
+
+# IA
+.claude
