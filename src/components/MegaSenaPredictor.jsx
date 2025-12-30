@@ -812,9 +812,9 @@ export default function MegaSenaPredictor() {
                 {hotNumbers.map(n => n.toString().padStart(2, '0')).join(', ')}
               </p>
               <p className="text-green-300 text-xs mt-1">
-                {isVirada 
+                {isVirada
                   ? 'Mais frequentes nas Mega da Virada'
-                  : 'Mais frequentes nos últimos 100 sorteios'}
+                  : 'Mais frequentes em todos os sorteios'}
               </p>
             </div>
             
@@ -867,7 +867,7 @@ export default function MegaSenaPredictor() {
               ) : (
                 <>
                   <li>• Analisa frequência de {totalDrawings.toLocaleString()} sorteios históricos</li>
-                  <li>• Considera tendências dos últimos 100 jogos</li>
+                  <li>• Considera tendências de todos os jogos</li>
                 </>
               )}
               <li>• Usa a data e hora exata como semente única</li>
