@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useLotteryData } from '../hooks/useLotteryData';
+import AdSense from './AdSense';
 import {
   calculateFrequencies,
   calculateRecentHot,
@@ -532,6 +533,9 @@ export default function MegaSenaPredictor() {
           </button>
         </div>
 
+        {/* Ad Placement - Top */}
+        <AdSense adFormat="auto" fullWidthResponsive={true} />
+
         {/* Main Card */}
         <div className={`backdrop-blur-lg rounded-3xl p-6 md:p-8 shadow-2xl border transition-all duration-300 ${getCardClass()}`}>
           
@@ -878,10 +882,16 @@ export default function MegaSenaPredictor() {
           </div>
         )}
 
+        {/* Ad Placement - Middle */}
+        <AdSense adFormat="auto" fullWidthResponsive={true} />
+
         {/* Disclaimer */}
         <p className="text-center text-green-400/60 text-xs mt-6">
           ⚠️ Apenas para entretenimento. A Mega-Sena é um jogo de sorte e os resultados são completamente aleatórios.
         </p>
+
+        {/* Ad Placement - Bottom */}
+        <AdSense adFormat="auto" fullWidthResponsive={true} />
       </div>
 
       {/* Donation Modal */}
