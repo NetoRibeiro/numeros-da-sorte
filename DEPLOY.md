@@ -70,6 +70,30 @@ This will:
 - About: `https://megasena-anesagem.github.io/numeros-da-sorte/#/about`
 - Contact: `https://megasena-anesagem.github.io/numeros-da-sorte/#/contact`
 
+## Google AdSense Verification
+
+### ads.txt File
+The ads.txt file has been added to verify your site with Google AdSense.
+
+**Location:** `public/ads.txt` (automatically copied to root during build)
+
+**After deployment, verify it's accessible:**
+```
+https://megasena-anesagem.github.io/numeros-da-sorte/ads.txt
+```
+
+**Expected content:**
+```
+google.com, pub-9250566258923255, DIRECT, f08c47fec0942fa0
+```
+
+**Google verification timeline:**
+- File is accessible: Immediate (after deployment)
+- Google crawls file: 24-48 hours
+- Site approval: 1-7 days (varies)
+
+For detailed AdSense setup information, see [ADSENSE_SETUP.md](ADSENSE_SETUP.md)
+
 ## Troubleshooting
 
 ### Build Fails
