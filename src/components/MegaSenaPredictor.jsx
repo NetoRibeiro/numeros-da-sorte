@@ -306,7 +306,7 @@ function DonationModal({ isOpen, onClose }) {
 
 export default function MegaSenaPredictor() {
   // Fetch lottery data from API
-  const { data: lotteryData, loading: dataLoading, error: dataError, lastUpdate, refresh } = useLotteryData();
+  const { data: lotteryData, loading: dataLoading, error: dataError, lastUpdate, nextUpdate, refresh } = useLotteryData();
 
   const [mode, setMode] = useState('megasena'); // 'megasena', 'virada', 'shuffle'
   const [numberCount, setNumberCount] = useState(6);
@@ -438,6 +438,48 @@ export default function MegaSenaPredictor() {
     });
   };
 
+  const getCacheAge = (lastUpdate) => {
+    if (!lastUpdate) return '';
+
+    const now = Date.now();
+    const updateTime = lastUpdate.getTime();
+    const hours = Math.floor((now - updateTime) / (1000 * 60 * 60));
+    const minutes = Math.floor((now - updateTime) / (1000 * 60));
+
+    if (hours < 1) {
+      if (minutes < 1) return 'agora mesmo';
+      if (minutes === 1) return 'há 1 minuto';
+      return `há ${minutes} minutos`;
+    }
+    if (hours === 1) return 'há 1 hora';
+    if (hours < 24) return `há ${hours} horas`;
+
+    const days = Math.floor(hours / 24);
+    if (days === 1) return 'ontem';
+    return `há ${days} dias`;
+  };
+
+  const getNextUpdateText = (nextUpdate) => {
+    if (!nextUpdate) return '';
+
+    const now = new Date();
+    const next = new Date(nextUpdate);
+
+    // If next update is today
+    if (now.toDateString() === next.toDateString()) {
+      return `hoje às ${next.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    // If next update is tomorrow
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    if (tomorrow.toDateString() === next.toDateString()) {
+      return `amanhã às ${next.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    return next.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  };
+
   const hotNumbers = isVirada ? frequencies.viradaHot.slice(0, 5) : frequencies.recentHot.slice(0, 5);
   const coldNumbers = getBottomNumbers(isVirada ? frequencies.virada : frequencies.historical, 5);
   const totalDrawings = frequencies.stats?.totalDrawings || FALLBACK_TOTAL_DRAWINGS;
@@ -499,20 +541,30 @@ export default function MegaSenaPredictor() {
 
           {/* Data update status */}
           {lastUpdate && (
-            <div className="mt-2 flex items-center justify-center gap-2">
-              <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-3 py-1">
-                <span className="text-green-300 text-xs">⏱️</span>
-                <span className="text-green-100 text-xs">
-                  Atualizado: {lastUpdate.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                </span>
+            <div className="mt-2 flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2">
+                <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-3 py-1">
+                  <span className="text-green-300 text-xs">⏱️</span>
+                  <span className="text-green-100 text-xs">
+                    Atualizado {getCacheAge(lastUpdate)}
+                  </span>
+                </div>
+                <button
+                  onClick={refresh}
+                  className="inline-flex items-center gap-1 bg-green-500/20 hover:bg-green-500/30 text-green-200 text-xs px-3 py-1 rounded-full transition-colors"
+                  title="Atualizar dados agora"
+                >
+                  🔄 Atualizar
+                </button>
               </div>
-              <button
-                onClick={refresh}
-                className="inline-flex items-center gap-1 bg-green-500/20 hover:bg-green-500/30 text-green-200 text-xs px-3 py-1 rounded-full transition-colors"
-                title="Atualizar dados"
-              >
-                🔄 Atualizar
-              </button>
+              {nextUpdate && (
+                <div className="inline-flex items-center gap-2 bg-blue-500/10 rounded-full px-3 py-1 border border-blue-500/20">
+                  <span className="text-blue-300 text-xs">📅</span>
+                  <span className="text-blue-100 text-xs">
+                    Próxima atualização: {getNextUpdateText(nextUpdate)}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
