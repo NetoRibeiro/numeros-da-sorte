@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useLotteryData } from '../hooks/useLotteryData';
 import AdSense from './AdSense';
+import Footer from './Footer';
 import {
   calculateFrequencies,
   calculateRecentHot,
@@ -893,6 +894,9 @@ export default function MegaSenaPredictor() {
         {/* Ad Placement - Bottom */}
         <AdSense adFormat="auto" fullWidthResponsive={true} />
       </div>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Donation Modal */}
       <DonationModal isOpen={showDonation} onClose={() => setShowDonation(false)} />
