@@ -1,7 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useSEO } from '../hooks/useSEO';
 
 export default function Contact() {
+  useSEO(
+    'Contato | Mega-Sena Predictor - Suporte e Dúvidas',
+    'Entre em contato com o Mega-Sena Predictor. Suporte, dúvidas, sugestões e feedback. Perguntas frequentes sobre o gerador de números da Mega-Sena.',
+    'contato mega-sena predictor, suporte, dúvidas, perguntas frequentes, FAQ, ajuda'
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 p-4 md:p-8">
       <div className="max-w-4xl mx-auto">

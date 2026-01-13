@@ -1,7 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useSEO } from '../hooks/useSEO';
 
 export default function About() {
+  useSEO(
+    'Sobre o Mega-Sena Predictor | Gerador Inteligente de Números',
+    'Conheça o Mega-Sena Predictor: ferramenta gratuita de análise estatística para Mega-Sena. +2.950 sorteios analisados. Números quentes, estatísticas e previsões.',
+    'sobre mega-sena predictor, como funciona, análise estatística, algoritmo mega-sena, números quentes, gerador loteria'
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 p-4 md:p-8">
       <div className="max-w-4xl mx-auto">

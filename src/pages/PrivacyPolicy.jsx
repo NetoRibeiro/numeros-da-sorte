@@ -1,7 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useSEO } from '../hooks/useSEO';
 
 export default function PrivacyPolicy() {
+  useSEO(
+    'Política de Privacidade | Mega-Sena Predictor',
+    'Política de privacidade do Mega-Sena Predictor. Informações sobre coleta de dados, cookies, Google AdSense e seus direitos de privacidade.',
+    'política de privacidade, privacidade mega-sena, proteção de dados, LGPD, cookies, google adsense'
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
