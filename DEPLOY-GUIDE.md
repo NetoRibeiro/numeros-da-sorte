@@ -2,6 +2,20 @@
 
 Este guia explica como fazer o deploy do projeto no GitHub Pages e como mantê-lo atualizado.
 
+## ✨ Novidades da Versão Atual
+
+### 📊 Seção de Análise Estatística
+- **Aba Frequência**: Gráfico de barras de todos os 60 números com tooltips
+- **Aba Tendência Central**: Média, Mediana e Moda com explicações
+- **Aba Dispersão**: Desvio Padrão, Variância, Box Plot visual
+- **Aba Distribuição**: Gráficos de pizza (Pares/Ímpares, Baixos/Altos)
+
+### 📋 Últimos Resultados
+- Exibe os **10 últimos sorteios** com:
+  - Número do concurso e data
+  - Números sorteados (bolas visuais)
+  - Premiação (6, 5 e 4 acertos)
+
 ---
 
 ## 📋 Pré-requisitos
@@ -152,10 +166,21 @@ npm run deploy
 mega-sena-predictor/
 ├── public/
 │   ├── favicon.svg          # Ícone do site
-│   └── qrcode_pix.jpg        # QR Code para doações
+│   ├── qrcode_pix.jpg       # QR Code para doações
+│   └── ads.txt              # Verificação Google AdSense
 ├── src/
 │   ├── components/
-│   │   └── MegaSenaPredictor.jsx  # Componente principal
+│   │   ├── MegaSenaPredictor.jsx  # Componente principal
+│   │   ├── Footer.jsx             # Rodapé com links
+│   │   └── AdSense.jsx            # Componente de anúncios
+│   ├── hooks/
+│   │   └── useLotteryData.js      # Hook para dados da API
+│   ├── utils/
+│   │   └── frequencies.js         # Cálculos de frequência
+│   ├── pages/
+│   │   ├── About.jsx              # Página Sobre
+│   │   ├── Contact.jsx            # Página Contato
+│   │   └── PrivacyPolicy.jsx      # Política de Privacidade
 │   ├── App.jsx
 │   ├── main.jsx
 │   └── index.css
@@ -165,6 +190,18 @@ mega-sena-predictor/
 ├── tailwind.config.js
 └── postcss.config.js
 ```
+
+## 📊 Componentes Principais
+
+### MegaSenaPredictor.jsx
+- **LotteryBall**: Bolas animadas dos números
+- **StatisticsSection**: Análise estatística com 4 abas
+  - Frequência (gráfico de barras)
+  - Tendência Central (média, mediana, moda)
+  - Dispersão (desvio padrão, variância, box plot)
+  - Distribuição (gráficos de pizza)
+- **LatestDraws**: Últimos 10 sorteios com premiação
+- **DonationModal**: Modal de doação PIX
 
 ---
 
@@ -227,10 +264,27 @@ git config --global user.name "Seu Nome"
 - [ ] `base` configurado em `vite.config.js`
 - [ ] `npm install` executado
 - [ ] `qrcode_pix.jpg` na pasta `public/`
+- [ ] `ads.txt` na pasta `public/`
 - [ ] Commit feito no branch `main`
 - [ ] `npm run deploy` executado
 - [ ] GitHub Pages configurado para branch `gh-pages`
 - [ ] Site funcionando! 🎉
+
+## ✅ Verificação Pós-Deploy
+
+1. **Página Principal**: Carrega sem erros
+2. **Gerar Números**: Funciona corretamente
+3. **📊 Análise Estatística**:
+   - [ ] Aba "Frequência" mostra gráfico de barras
+   - [ ] Aba "Tendência Central" mostra média, mediana, moda
+   - [ ] Aba "Dispersão" mostra box plot
+   - [ ] Aba "Distribuição" mostra gráficos de pizza
+4. **📋 Últimos Resultados**:
+   - [ ] Mostra 10 sorteios recentes
+   - [ ] Exibe premiação (6, 5, 4 acertos)
+5. **Mega da Virada**: Tema roxo funciona
+6. **Embaralhar**: Modo shuffle funciona
+7. **Páginas**: Privacy, About, Contact acessíveis
 
 ---
 

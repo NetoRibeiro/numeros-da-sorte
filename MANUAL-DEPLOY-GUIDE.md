@@ -4,6 +4,20 @@ This guide explains how to manually deploy your project to GitHub Pages when `np
 
 ---
 
+## What's New in This Version
+
+### 📊 Statistical Analysis Section
+- **Frequency Tab**: Bar chart of all 60 numbers with Top 10 / Bottom 10
+- **Central Tendency Tab**: Mean, Median, Mode with explanations
+- **Dispersion Tab**: Standard Deviation, Variance, Box Plot visualization
+- **Distribution Tab**: Pie charts (Odd/Even, Low/High numbers)
+
+### 📋 Latest Results Section
+- Displays the **last 10 lottery draws**
+- Shows contest number, date, winning numbers, and prize information
+
+---
+
 ## Prerequisites
 
 - Project built with `npm run build`
@@ -196,6 +210,30 @@ The `-f` flag forces the push and overwrites the remote branch.
 - The `dist` folder is recreated each build
 - Force push (`-f`) overwrites the entire gh-pages branch
 - Changes take 2-5 minutes to appear on the live site
+
+---
+
+## Verify After Deploy
+
+After deployment, verify these new features work:
+
+1. **📊 Análise Estatística Section**
+   - Scroll down to find the statistics section
+   - Test all 4 tabs: Frequência, Tendência Central, Dispersão, Distribuição
+   - Hover over bar chart numbers to see tooltips
+   - Check box plot visualization in Dispersão tab
+   - Verify pie charts in Distribuição tab
+
+2. **📋 Últimos Resultados Section**
+   - Verify 10 lottery draws are displayed
+   - Each draw should show:
+     - Contest number and date
+     - 6 lottery ball numbers
+     - Prize information (6, 5, 4 acertos)
+
+3. **Mode Switching**
+   - Switch to "Mega da Virada" - statistics should adapt (purple theme)
+   - Switch to "Embaralhar" - statistics section should be hidden
 
 ---
 

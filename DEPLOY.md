@@ -12,6 +12,32 @@ This will:
 
 ## What's New in This Version
 
+### 📊 Statistical Analysis Section (NEW!)
+- **Frequency Tab**: Full bar chart of all 60 numbers with hover tooltips
+  - Color-coded: Yellow/orange for Top 10, Blue for Bottom 10
+  - Top 10 Most Frequent and Least Frequent numbers with progress bars
+- **Central Tendency Tab**: Mean, Median, and Mode calculations
+  - Educational explanations in Portuguese
+- **Dispersion Tab**:
+  - Range (Amplitude), Standard Deviation, Variance, Coefficient of Variation
+  - Visual Box Plot showing Q1, Median, Q3, Min, Max, and IQR
+  - Interpretive text based on statistical values
+- **Distribution Tab**:
+  - Range distribution bar chart (1-10, 11-20, 21-30, 31-40, 41-50, 51-60)
+  - Pie charts for Odd vs Even and Low vs High (1-30 vs 31-60)
+  - Summary statistics with total draws and probability info
+
+### 📋 Latest Results Section (NEW!)
+- Displays the **latest 10 lottery draws**
+- Shows for each draw:
+  - Contest number and date: "Resultado: Concurso # (DD/MM/YYYY)"
+  - Numbers displayed as lottery balls
+  - Prize information (Premiação):
+    - 6 acertos: Winners count and prize (or "Acumulou!" if jackpot)
+    - 5 acertos: Winners count and prize
+    - 4 acertos: Winners count and prize
+- Adapts styling for Mega-Sena (green) and Mega da Virada (purple) modes
+
 ### Daily Updates at 02:02 AM 🕐
 - Smart cache expiration at 02:02 AM daily
 - 70-80% reduction in API calls
@@ -38,7 +64,7 @@ This will:
 
 ### Enhanced Features
 - Dynamic frequency calculations
-- Live statistics
+- Live statistics with visual charts
 - Cache age display ("há X horas")
 - Next update time ("amanhã às 02:02")
 - Fallback to static data if APIs fail
@@ -53,6 +79,12 @@ This will:
 6. Check "Próxima atualização:" shows next update time
 7. Test the "🔄 Atualizar" refresh button
 8. Generate some predictions to verify functionality
+9. **NEW**: Scroll down to verify "📊 Análise Estatística" section loads
+   - Test all 4 tabs: Frequência, Tendência Central, Dispersão, Distribuição
+   - Hover over bar chart numbers to see tooltips
+10. **NEW**: Verify "📋 Últimos Resultados" section shows 10 draws
+    - Check prize information (Premiação) displays correctly
+11. Switch to "Mega da Virada" mode and verify statistics adapt (purple theme)
 
 ## Important: GitHub Pages Routing Fix
 
@@ -120,9 +152,25 @@ npm run build
 dist/
 ├── index.html          # Main HTML
 ├── assets/
-│   ├── index-*.js     # Main JS bundle (includes API code)
+│   ├── index-*.js     # Main JS bundle (includes API code, statistics)
 │   └── index-*.css    # Styles
-└── qrcode_pix.jpg     # PIX QR code
+├── qrcode_pix.jpg     # PIX QR code
+└── ads.txt            # Google AdSense verification
+```
+
+## Components Overview
+
+```
+src/components/MegaSenaPredictor.jsx
+├── LotteryBall          # Animated lottery ball display
+├── StatisticsSection    # NEW: Statistical analysis with 4 tabs
+│   ├── Frequency Tab    # Bar chart, Top/Bottom 10
+│   ├── Central Tab      # Mean, Median, Mode
+│   ├── Dispersion Tab   # Std Dev, Variance, Box Plot
+│   └── Distribution Tab # Range bars, Pie charts
+├── LatestDraws          # NEW: Last 10 draws with prizes
+├── DonationModal        # PIX donation popup
+└── Main Predictor UI    # Number generation interface
 ```
 
 ## Monitoring
