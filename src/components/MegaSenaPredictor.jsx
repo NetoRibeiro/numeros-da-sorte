@@ -212,6 +212,127 @@ function LotteryBall({ number, delay, isRevealed, isLucky, size = 'normal' }) {
   );
 }
 
+// Latest Draws Component
+function LatestDraws({ draws, isVirada }) {
+  if (!draws || draws.length === 0) return null;
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    // Handle both DD/MM/YYYY and ISO formats
+    if (dateStr.includes('/')) {
+      return dateStr;
+    }
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('pt-BR');
+  };
+
+  const formatCurrency = (value) => {
+    if (!value) return 'R$ 0,00';
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
+
+  const getPrizeInfo = (draw, hits) => {
+    if (!draw.premiacao) return { winners: 0, prize: 'R$ 0,00' };
+
+    const prizeData = draw.premiacao.find(p => {
+      const desc = p.descricao || p.descricaoFaixa || '';
+      return desc.includes(`${hits} acertos`) || desc.includes(`${hits} Acertos`) || p.faixa === (7 - hits);
+    });
+
+    if (!prizeData) return { winners: 0, prize: 'R$ 0,00' };
+
+    return {
+      winners: prizeData.ganhadores || prizeData.numeroDeGanhadores || 0,
+      prize: formatCurrency(prizeData.valorPremio || prizeData.valor || 0)
+    };
+  };
+
+  return (
+    <div className={`mt-6 backdrop-blur rounded-2xl p-4 md:p-6 border ${
+      isVirada ? 'bg-purple-500/10 border-purple-300/20' : 'bg-white/10 border-white/20'
+    }`}>
+      <h3 className={`font-bold text-lg mb-4 flex items-center gap-2 ${
+        isVirada ? 'text-purple-200' : 'text-green-200'
+      }`}>
+        <span>📋</span> Últimos Resultados
+      </h3>
+
+      <div className="space-y-4">
+        {draws.map((draw, index) => {
+          const numbers = draw.dezenas || draw.listaDezenas || [];
+          const date = draw.data || draw.dataApuracao || '';
+          const contest = draw.concurso || draw.numero || '';
+          const prize6 = getPrizeInfo(draw, 6);
+          const prize5 = getPrizeInfo(draw, 5);
+          const prize4 = getPrizeInfo(draw, 4);
+
+          return (
+            <div
+              key={contest || index}
+              className={`rounded-xl p-4 border ${
+                isVirada
+                  ? 'bg-purple-900/30 border-purple-500/20'
+                  : 'bg-green-900/30 border-green-500/20'
+              }`}
+            >
+              {/* Header */}
+              <div className={`text-sm font-semibold mb-3 ${
+                isVirada ? 'text-purple-300' : 'text-green-300'
+              }`}>
+                Resultado: Concurso {contest} ({formatDate(date)})
+              </div>
+
+              {/* Numbers */}
+              <div className="mb-3">
+                <div className={`text-xs mb-2 ${isVirada ? 'text-purple-400' : 'text-green-400'}`}>
+                  Números:
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {numbers.map((num, numIndex) => (
+                    <span
+                      key={numIndex}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-white ${
+                        isVirada
+                          ? 'bg-gradient-to-br from-purple-500 to-pink-600'
+                          : 'bg-gradient-to-br from-green-500 to-emerald-600'
+                      }`}
+                    >
+                      {num.toString().padStart(2, '0')}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Prize Information */}
+              <div className={`text-xs space-y-1 ${isVirada ? 'text-purple-300' : 'text-green-300'}`}>
+                <div className="font-semibold mb-1">Premiação:</div>
+                <div className="flex justify-between">
+                  <span>6 acertos:</span>
+                  <span className="text-yellow-400">
+                    {prize6.winners > 0
+                      ? `${prize6.winners} ganhador${prize6.winners > 1 ? 'es' : ''} - ${prize6.prize}`
+                      : 'Acumulou!'
+                    }
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>5 acertos:</span>
+                  <span>{prize5.winners} ganhador{prize5.winners !== 1 ? 'es' : ''} - {prize5.prize}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>4 acertos:</span>
+                  <span>{prize4.winners} ganhador{prize4.winners !== 1 ? 'es' : ''} - {prize4.prize}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // Donation Modal Component
 function DonationModal({ isOpen, onClose }) {
   const [copied, setCopied] = useState(false);
@@ -907,6 +1028,14 @@ export default function MegaSenaPredictor() {
               <li>• Use para recombinar números que você já joga!</li>
             </ul>
           </div>
+        )}
+
+        {/* Latest Draws Section - Only show for non-shuffle modes */}
+        {!isShuffle && lotteryData && (
+          <LatestDraws
+            draws={lotteryData.slice(-10).reverse()}
+            isVirada={isVirada}
+          />
         )}
 
         {/* Algorithm Info - Normal modes */}

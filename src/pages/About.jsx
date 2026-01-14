@@ -4,9 +4,13 @@ import { useSEO } from '../hooks/useSEO';
 
 export default function About() {
   useSEO(
-    'Sobre o Mega-Sena Predictor | Gerador Inteligente de Números',
-    'Conheça o Mega-Sena Predictor: ferramenta gratuita de análise estatística para Mega-Sena. +2.950 sorteios analisados. Números quentes, estatísticas e previsões.',
-    'sobre mega-sena predictor, como funciona, análise estatística, algoritmo mega-sena, números quentes, gerador loteria'
+    'Sobre o Mega-Sena Predictor | Gerador Inteligente de Números para a Mega-Sena',
+    'Conheça o Mega-Sena Predictor: ferramenta gratuita de análise estatística para Mega-Sena. +2.950 sorteios analisados. Números quentes, números frios, estatísticas e previsões.',
+    'sobre mega-sena predictor, como funciona, análise estatística, algoritmo mega-sena, números que mais saem, números que menos saem, gerador loteria',
+    'Quais são os números mais sorteados na história da Mega-Sena',
+    'Como usar inteligência artificial para escolher números da loteria',
+    'Análise estatística de sorteios da Mega-Sena',
+    'Gerador de números para Mega-Sena e Mega da Virada'
   );
 
   return (
@@ -20,13 +24,13 @@ export default function About() {
             ← Voltar para o início
           </Link>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">Sobre o Mega-Sena Predictor</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">Gerador de Números Mega-Sena com Inteligência Artificial</h1>
 
           <div className="space-y-6 text-green-100">
             <section>
               <h2 className="text-2xl font-semibold text-white mb-3">🍀 O que é o Mega-Sena Predictor?</h2>
               <p>
-                O Mega-Sena Predictor é uma ferramenta de entretenimento que gera números para a Mega-Sena e Mega da Virada baseado em análise estatística de milhares de sorteios históricos.
+                O <strong>Mega-Sena Predictor</strong> é um <strong>gerador inteligente de números para Mega-Sena</strong> que utiliza análise estatística e inteligência artificial para gerar combinações baseadas em mais de 2.950 sorteios históricos. Nossa ferramenta analisa <strong>números quentes</strong> (que mais saem) e <strong>números frios</strong> (que menos saem) para criar previsões personalizadas para a Mega-Sena e Mega da Virada 2026.
               </p>
             </section>
 
@@ -38,42 +42,42 @@ export default function About() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-3">🧮 Como Funciona?</h2>
+              <h2 className="text-2xl font-semibold text-white mb-3">🧮 Como Funciona o Algoritmo de IA para Mega-Sena?</h2>
               <div className="space-y-4">
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">Análise Histórica</h3>
+                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">Análise Estatística de Números Mais Sorteados</h3>
                   <p>
-                    Analisamos mais de 2.950+ sorteios históricos da Mega-Sena para identificar padrões de frequência. Nosso algoritmo considera números mais e menos frequentes ao longo da história.
+                    Analisamos mais de 2.950+ sorteios históricos da Mega-Sena para identificar <strong>números que mais saem</strong> (números quentes) e <strong>números que menos saem</strong> (números frios). Nosso algoritmo de inteligência artificial considera a frequência de cada número ao longo da história para gerar previsões mais inteligentes.
                   </p>
                 </div>
 
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">Personalização</h3>
+                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">Personalização com Número da Sorte</h3>
                   <p>
-                    Você pode inserir seu "número da sorte" que influenciará toda a geração. Números próximos ao seu número da sorte ganham peso extra no algoritmo.
+                    Você pode inserir seu "número da sorte" que influenciará toda a geração. Números próximos ao seu número da sorte ganham peso extra no algoritmo de previsão.
                   </p>
                 </div>
 
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">Mega da Virada</h3>
+                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">Gerador para Mega da Virada 2026</h3>
                   <p>
-                    Modo especial que analisa especificamente os sorteios da Mega da Virada, priorizando números que historicamente saíram mais nesse sorteio especial.
+                    Modo especial que analisa especificamente os <strong>sorteios da Mega da Virada</strong>, priorizando números que historicamente saíram mais nesse sorteio especial de fim de ano.
                   </p>
                 </div>
 
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">Modo Embaralhar</h3>
+                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">Modo Embaralhar Números</h3>
                   <p>
-                    Permite que você insira seus próprios números favoritos e gere novas combinações embaralhando-os de forma inteligente.
+                    Permite que você insira seus próprios números favoritos e gere novas combinações embaralhando-os de forma inteligente com base em estatísticas.
                   </p>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-3">📊 Dados em Tempo Real</h2>
+              <h2 className="text-2xl font-semibold text-white mb-3">📊 Estatísticas e Dados em Tempo Real da Mega-Sena</h2>
               <p>
-                Nosso sistema busca automaticamente os resultados mais recentes da Mega-Sena através da API oficial da Caixa, garantindo que as análises estejam sempre atualizadas.
+                Nosso sistema busca automaticamente os <strong>resultados mais recentes da Mega-Sena</strong> através da API oficial da Caixa Econômica Federal, garantindo que as análises estatísticas e previsões estejam sempre atualizadas com os últimos concursos.
               </p>
             </section>
 
@@ -88,22 +92,22 @@ export default function About() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-3">💚 Apoie o Projeto</h2>
+              <h2 className="text-2xl font-semibold text-white mb-3">💚 Apoie o Projeto de Análise de Loteria</h2>
               <p>
-                Este é um projeto gratuito e sem fins lucrativos. Se você gostou e quer ajudar a manter o site no ar, considere fazer uma contribuição via PIX. Qualquer valor é bem-vindo!
+                Este é um projeto gratuito e sem fins lucrativos. Se você gostou do nosso <strong>gerador de números para Mega-Sena</strong> e quer ajudar a manter o site no ar, considere fazer uma contribuição via PIX. Qualquer valor é bem-vindo!
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-3">📱 Tecnologia</h2>
+              <h2 className="text-2xl font-semibold text-white mb-3">📱 Tecnologia por Trás do Gerador</h2>
               <p className="mb-3">
-                O site foi desenvolvido com tecnologias modernas:
+                Nosso <strong>simulador de Mega-Sena com IA</strong> foi desenvolvido com tecnologias modernas para garantir análises precisas e interface intuitiva:
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>React - Interface moderna e responsiva</li>
+                <li>React - Interface moderna e responsiva para análise de números</li>
                 <li>Tailwind CSS - Design elegante e adaptável</li>
-                <li>API da Caixa - Dados oficiais em tempo real</li>
-                <li>Algoritmos personalizados de geração</li>
+                <li>API oficial da Caixa - Dados oficiais e resultados em tempo real</li>
+                <li>Algoritmos de IA personalizados para análise estatística de loteria</li>
               </ul>
             </section>
 
