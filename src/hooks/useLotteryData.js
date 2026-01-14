@@ -165,10 +165,12 @@ export function useLotteryData() {
             setLastUpdate(new Date(timestamp));
             setError('Usando dados em cache. Última atualização pode estar desatualizada.');
           } catch {
-            setError('Falha ao carregar dados. Tente novamente mais tarde.');
+            // Cache parse failed, will use fallback static data
+            setError('Usando dados estáticos.');
           }
         } else {
-          setError('Falha ao carregar dados. Tente novamente mais tarde.');
+          // No cache available, will use fallback static data
+          setError('Usando dados estáticos.');
         }
       }
     } finally {
