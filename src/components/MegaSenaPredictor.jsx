@@ -409,7 +409,7 @@ function StatisticsSection({ frequencies, lotteryData, isVirada }) {
                     {/* Tooltip */}
                     <div className="absolute bottom-full mb-1 hidden group-hover:block z-10">
                       <div className="bg-gray-900 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
-                        {num}: {count}x ({((count / (stats.totalDraws * 6)) * 100).toFixed(1)}%)
+                        {num}: {count}x ({stats.totalDraws ? ((count / (stats.totalDraws * 6)) * 100).toFixed(1) : '0'}%)
                       </div>
                     </div>
                   </div>
@@ -654,7 +654,7 @@ function StatisticsSection({ frequencies, lotteryData, isVirada }) {
             <div className="space-y-3">
               {Object.entries(stats.distribution).map(([range, count]) => {
                 const maxDist = Math.max(...Object.values(stats.distribution));
-                const percentage = ((count / (stats.totalDraws * 6)) * 100).toFixed(1);
+                const percentage = stats.totalDraws ? ((count / (stats.totalDraws * 6)) * 100).toFixed(1) : '0';
                 return (
                   <div key={range} className="flex items-center gap-3">
                     <span className="text-gray-300 text-sm w-14">{range}</span>
@@ -665,7 +665,7 @@ function StatisticsSection({ frequencies, lotteryData, isVirada }) {
                             ? 'bg-gradient-to-r from-purple-500 to-pink-500'
                             : 'bg-gradient-to-r from-green-500 to-emerald-400'
                         }`}
-                        style={{ width: `${(count / maxDist) * 100}%` }}
+                        style={{ width: `${maxDist > 0 ? (count / maxDist) * 100 : 0}%` }}
                       />
                     </div>
                     <span className="text-gray-300 text-sm w-20 text-right">{count.toLocaleString()} ({percentage}%)</span>
@@ -768,11 +768,11 @@ function StatisticsSection({ frequencies, lotteryData, isVirada }) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-xs">
               <div>
                 <span className="text-gray-400">Total Sorteios</span>
-                <div className="text-white font-bold text-lg">{stats.totalDraws?.toLocaleString()}</div>
+                <div className="text-white font-bold text-lg">{stats.totalDraws?.toLocaleString() || '0'}</div>
               </div>
               <div>
                 <span className="text-gray-400">Total Números</span>
-                <div className="text-white font-bold text-lg">{(stats.totalDraws * 6)?.toLocaleString()}</div>
+                <div className="text-white font-bold text-lg">{stats.totalDraws ? (stats.totalDraws * 6).toLocaleString() : '0'}</div>
               </div>
               <div>
                 <span className="text-gray-400">Prob. Teórica</span>
@@ -781,7 +781,7 @@ function StatisticsSection({ frequencies, lotteryData, isVirada }) {
               <div>
                 <span className="text-gray-400">Maior Desvio</span>
                 <div className="text-white font-bold text-lg">
-                  {((Math.max(stats.max, stats.mean * 2 - stats.min) - stats.mean) / stats.mean * 100).toFixed(1)}%
+                  {stats.mean ? ((Math.max(stats.max, parseFloat(stats.mean) * 2 - stats.min) - parseFloat(stats.mean)) / parseFloat(stats.mean) * 100).toFixed(1) : '0'}%
                 </div>
               </div>
             </div>
