@@ -659,7 +659,7 @@ export default function MegaSenaPredictor() {
               <span className="text-2xl">{isShuffle ? '🔀' : isVirada ? '🎆' : '🍀'}</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white">
-              {isShuffle ? 'Embaralhar' : isVirada ? 'Mega da Virada' : 'Mega-Sena'} Predictor
+              Gerador {isShuffle ? 'Embaralhar' : isVirada ? 'Mega da Virada' : 'Mega-Sena'}
             </h1>
           </div>
           <p className="text-green-200 text-sm md:text-base">
