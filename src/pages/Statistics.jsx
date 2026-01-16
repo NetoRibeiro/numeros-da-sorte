@@ -43,52 +43,80 @@ export default function Statistics() {
 
         const freq = isVirada ? frequencies.virada : frequencies.historical;
         if (!freq) return null;
-        const values = Object.values(freq).filter(v => v > 0);
 
-        if (values.length === 0) return null;
+        // Get entries as [number, frequency] pairs
+        const entries = Object.entries(freq)
+            .map(([num, count]) => [parseInt(num), count])
+            .filter(([_, count]) => count > 0);
 
-        // Sort values for calculations
-        const sortedValues = [...values].sort((a, b) => a - b);
-        const n = sortedValues.length;
+        if (entries.length === 0) return null;
 
-        // Mean (average)
-        const sum = values.reduce((a, b) => a + b, 0);
-        const mean = sum / n;
+        // Total count of all draws
+        const totalDraws = entries.reduce((sum, [_, count]) => sum + count, 0);
 
-        // Median
-        const mid = Math.floor(n / 2);
-        const median = n % 2 !== 0
-            ? sortedValues[mid]
-            : (sortedValues[mid - 1] + sortedValues[mid]) / 2;
+        // Weighted Mean: Σ(number × frequency) / Σ(frequency)
+        const weightedSum = entries.reduce((sum, [num, count]) => sum + (num * count), 0);
+        const mean = weightedSum / totalDraws;
 
-        // Mode (most frequent value)
-        const valueCount = {};
-        values.forEach(v => {
-            valueCount[v] = (valueCount[v] || 0) + 1;
-        });
-        const maxCount = Math.max(...Object.values(valueCount));
-        const modes = Object.entries(valueCount)
-            .filter(([_, count]) => count === maxCount)
-            .map(([val]) => parseInt(val));
+        // Weighted Median: find the middle value when all draws are considered
+        const sortedEntries = [...entries].sort((a, b) => a[0] - b[0]);
+        let cumulativeCount = 0;
+        let median = 0;
+        const midPoint = totalDraws / 2;
 
-        // Range
-        const min = sortedValues[0];
-        const max = sortedValues[n - 1];
+        for (let i = 0; i < sortedEntries.length; i++) {
+            const [num, count] = sortedEntries[i];
+            cumulativeCount += count;
+            if (cumulativeCount >= midPoint) {
+                if (totalDraws % 2 === 0 && cumulativeCount === midPoint) {
+                    // Exact middle, average with next number
+                    median = (num + sortedEntries[i + 1][0]) / 2;
+                } else {
+                    median = num;
+                }
+                break;
+            }
+        }
+
+        // Mode: the number(s) that appear most frequently
+        const maxFrequency = Math.max(...entries.map(([_, count]) => count));
+        const modes = entries
+            .filter(([_, count]) => count === maxFrequency)
+            .map(([num]) => num)
+            .sort((a, b) => a - b);
+
+        // Range (of the numbers 1-60, based on which numbers have been drawn)
+        const drawnNumbers = entries.map(([num]) => num).sort((a, b) => a - b);
+        const min = drawnNumbers[0];
+        const max = drawnNumbers[drawnNumbers.length - 1];
         const range = max - min;
 
-        // Variance and Standard Deviation
-        const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
-        const variance = squaredDiffs.reduce((a, b) => a + b, 0) / n;
+        // Weighted Variance and Standard Deviation
+        const weightedSquaredDiffs = entries.reduce((sum, [num, count]) => {
+            return sum + (Math.pow(num - mean, 2) * count);
+        }, 0);
+        const variance = weightedSquaredDiffs / totalDraws;
         const stdDev = Math.sqrt(variance);
 
         // Coefficient of Variation
         const cv = (stdDev / mean) * 100;
 
-        // Quartiles
-        const q1Index = Math.floor(n * 0.25);
-        const q3Index = Math.floor(n * 0.75);
-        const q1 = sortedValues[q1Index];
-        const q3 = sortedValues[q3Index];
+        // Weighted Quartiles
+        const q1Point = totalDraws * 0.25;
+        const q3Point = totalDraws * 0.75;
+        let q1 = 0, q3 = 0;
+        cumulativeCount = 0;
+
+        for (const [num, count] of sortedEntries) {
+            cumulativeCount += count;
+            if (q1 === 0 && cumulativeCount >= q1Point) {
+                q1 = num;
+            }
+            if (cumulativeCount >= q3Point) {
+                q3 = num;
+                break;
+            }
+        }
         const iqr = q3 - q1;
 
         // Frequency distribution by ranges
@@ -120,8 +148,8 @@ export default function Statistics() {
         });
 
         return {
-            mean: mean.toFixed(2),
-            median: median.toFixed(2),
+            mean: Math.round(mean),
+            median: Math.round(median),
             modes,
             min,
             max,
@@ -140,6 +168,39 @@ export default function Statistics() {
             totalDraws: isVirada ? frequencies.stats?.viradaDrawings : frequencies.stats?.totalDrawings
         };
     }, [frequencies, isVirada]);
+
+    // Get last draw numbers and calculate magic numbers
+    const lastDraw = useMemo(() => {
+        if (!lotteryData) {
+            return null;
+        }
+        // Handle both array (primary API) and single object (fallback API) responses
+        const result = Array.isArray(lotteryData) ? lotteryData[0] : lotteryData;
+        return result?.listaDezenas || result?.dezenas || null;
+    }, [lotteryData]);
+
+    const magicNumbers = useMemo(() => {
+        if (!lastDraw || !stats?.cv) return null;
+
+        const cvValue = parseFloat(stats.cv) / 100; // Convert from percentage to decimal
+
+        return lastDraw.map(num => {
+            const originalNum = parseInt(num);
+            let magicNum = Math.round(originalNum * cvValue);
+            // If result is greater than 60, subtract 60
+            if (magicNum > 60) {
+                magicNum = magicNum - 60;
+            }
+            // Ensure minimum of 1
+            if (magicNum < 1) {
+                magicNum = 1;
+            }
+            return {
+                original: originalNum,
+                magic: magicNum
+            };
+        });
+    }, [lastDraw, stats]);
 
     // Helpers
     const getFrequencyData = () => {
@@ -225,6 +286,9 @@ export default function Statistics() {
                             </button>
                             <button onClick={() => setActiveTab('distribution')} className={tabClass('distribution')}>
                                 🎯 Distribuição
+                            </button>
+                            <button onClick={() => setActiveTab('magic')} className={tabClass('magic')}>
+                                ✨ Números Mágicos
                             </button>
                         </div>
 
@@ -435,6 +499,52 @@ export default function Statistics() {
                                                 );
                                             })}
                                         </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Magic Numbers Tab */}
+                            {activeTab === 'magic' && (
+                                <div className="space-y-6">
+                                    <div className={`rounded-2xl p-6 border ${isVirada ? 'bg-purple-900/20 border-purple-500/20' : 'bg-green-900/20 border-green-500/20'}`}>
+                                        <h4 className="text-white font-semibold mb-2">Números Mágicos</h4>
+                                        <p className="text-gray-400 text-sm mb-6">
+                                            Calculados a partir do último sorteio multiplicado pelo Coeficiente de Variação ({stats.cv}%)
+                                        </p>
+
+                                        {magicNumbers ? (
+                                            <>
+                                                {/* Last Draw Numbers */}
+                                                <div className="mb-8">
+                                                    <h5 className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-4">Último Sorteio</h5>
+                                                    <div className="flex flex-wrap gap-3">
+                                                        {lastDraw.map((num) => (
+                                                            <div key={num} className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 border-2 border-green-400/30 flex items-center justify-center shadow-lg shadow-green-900/50">
+                                                                <span className="text-white text-2xl md:text-3xl font-bold">{num}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Magic Numbers Result */}
+                                                <div>
+                                                    <h5 className="text-yellow-400 text-sm font-medium uppercase tracking-wider mb-4 flex items-center gap-2">
+                                                        <span>✨</span> Números Mágicos
+                                                    </h5>
+                                                    <div className="flex flex-wrap gap-3">
+                                                        {magicNumbers.map(({ original, magic }) => (
+                                                            <div key={original} className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 border-2 border-purple-400/30 flex items-center justify-center shadow-lg shadow-purple-900/50">
+                                                                <span className="text-white text-2xl md:text-3xl font-bold">{magic.toString().padStart(2, '0')}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="text-center py-8 text-gray-400">
+                                                Dados do último sorteio não disponíveis
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
