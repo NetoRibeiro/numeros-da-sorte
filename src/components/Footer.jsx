@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import brandLogo from '../assets/brand.png';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -7,6 +8,11 @@ export default function Footer() {
   return (
     <footer className="mt-8 pb-6">
       <div className="max-w-4xl mx-auto">
+        {/* Brand Logo */}
+        <div className="flex justify-center mb-4">
+          <img src={brandLogo} alt="Mega-Sena Predictor" className="h-12" />
+        </div>
+
         {/* Links Section */}
         <div className="flex flex-wrap justify-center gap-4 mb-4">
           <Link
@@ -45,7 +51,7 @@ export default function Footer() {
         {/* Social/Support Links */}
         <div className="flex justify-center gap-4 mt-4">
           <a
-            href="https://github.com/MegaSena-aneSageM/numeros-da-sorte"
+            href="https://github.com/NetoRibeiro/numeros-da-sorte"
             target="_blank"
             rel="noopener noreferrer"
             className="text-green-400/60 hover:text-green-300 transition-colors"

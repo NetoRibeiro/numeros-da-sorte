@@ -48,7 +48,7 @@ export default function Contact() {
                   <h3 className="text-lg font-semibold text-yellow-300 mb-2">GitHub</h3>
                   <p className="mb-2">Encontrou um bug ou quer contribuir com o código?</p>
                   <a
-                    href="https://github.com/MegaSena-aneSageM/numeros-da-sorte"
+                    href="https://github.com/NetoRibeiro/numeros-da-sorte"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-green-300 hover:text-green-200 underline inline-flex items-center gap-2"
